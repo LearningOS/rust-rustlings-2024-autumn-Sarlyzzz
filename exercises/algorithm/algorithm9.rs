@@ -2,7 +2,7 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +37,14 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        let mut current_idx = self.count;
+        while self.parent_idx(current_idx) > 0 && (self.comparator)(&self.items[current_idx], &self.items[self.parent_idx(current_idx)]){
+            let parent_idx = self.parent_idx(current_idx);
+            self.items.swap(current_idx, parent_idx);
+            current_idx = parent_idx;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +64,15 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left_idx = self.left_child_idx(idx);
+        let right_idx = self.right_child_idx(idx);
+        if right_idx > self.count {
+            left_idx
+        } else if (self.comparator)(&self.items[left_idx], &self.items[right_idx]) {
+            left_idx
+        } else {
+            right_idx
+        }
     }
 }
 
@@ -84,8 +98,29 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        let count = self.count;
+        if count == 0 {
+            None
+        } else {
+            self.items.swap(1, count);
+            self.count -= 1;
+            let mut cur_idx = 1;
+
+            println!("{}",self.count);
+            while self.children_present(cur_idx) {
+                let left_idx = self.left_child_idx(cur_idx);
+                let right_idx = self.right_child_idx(cur_idx);
+                let smallest_idx = self.smallest_child_idx(cur_idx);
+                if (self.comparator)(&self.items[smallest_idx], &self.items[cur_idx]) {
+                    self.items.swap(cur_idx, smallest_idx);
+                    cur_idx = smallest_idx;
+                } else {
+                    break;
+                }
+                
+            }
+            self.items.pop()
+        }
     }
 }
 
